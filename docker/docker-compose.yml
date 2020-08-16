@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:1.19
+    container_name: testinn_nginx
+    ports:
+      - 1080:80
+    networks:
+      - common
+    volumes:
+      - ../web/:/web/
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    working_dir: /web/
+    depends_on:
+      - php
+    restart: unless-stopped
+
+  php:
+    image: testinn_php
+    build:
+      context: ./php
+    container_name: testinn_php
+    networks:
+      - common
+    volumes:
+      - ../web/:/web/
+    working_dir: /web/
+    restart: unless-stopped
+
+networks:
+  common:
