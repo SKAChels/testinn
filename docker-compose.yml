@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:1.19
+    container_name: testinn-nginx
+    ports:
+      - ${NGINX_PORT}:80
+    networks:
+      - common
+    volumes:
+      - ./:/web/
+      - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
+    working_dir: /web/backend/
+    depends_on:
+      - php
+    restart: unless-stopped
+
+  php:
+    build:
+      context: docker/php
+    container_name: testinn-php
+    networks:
+      - common
+    volumes:
+      - ./backend/:/web/backend/
+    working_dir: /web/backend/
+    restart: unless-stopped
+
+  composer:
+    image: composer:1.10.10
+    container_name: testinn-composer
+    networks:
+      - common
+    volumes:
+      - ./backend/:/web/backend/
+    working_dir: /web/backend/
+    command: ['install']
+
+networks:
+  common:
