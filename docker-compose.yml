@@ -25,6 +25,8 @@ services:
     volumes:
       - ./backend/:/web/backend/
     working_dir: /web/backend/
+    env_file:
+      - .env
     restart: unless-stopped
 
   composer:
@@ -35,7 +37,14 @@ services:
     volumes:
       - ./backend/:/web/backend/
     working_dir: /web/backend/
-    command: ['install']
+
+  memcached:
+    image: memcached:1.6.6
+    container_name: testinn-memcached
+    ports:
+      - ${MEMCACHED_PORT}:11211
+    networks:
+      - common
 
 networks:
   common:

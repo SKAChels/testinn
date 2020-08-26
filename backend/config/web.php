@@ -1,75 +1,76 @@
 <?php
 
-$params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db.php';
+declare(strict_types=1);
 
-$config = [
-    'id' => 'basic',
+use app\models\User;
+use yii\web\ErrorHandler;
+use yii\web\JsonResponseFormatter;
+use yii\caching\MemCache;
+use yii\log\FileTarget;
+use app\modules\v1\Module as ModuleApiV1;
+use yii\web\JsonParser;
+use yii\web\Response;
+
+return [
+    'id' => 'testinn-api',
+    'name' => 'Test INN API',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
-    ],
+    'bootstrap' => ['log', 'v1'],
     'components' => [
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'kTLoMbD0es_f2A1ojdUuF3k3EC6ppSDM',
+            'enableCsrfValidation' => false,
+            'enableCookieValidation' => false,
+            'parsers' => [
+                'application/json' => JsonParser::class,
+            ],
         ],
-        'cache' => [
-            'class' => 'yii\caching\FileCache',
-        ],
-        'user' => [
-            'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+        'response' => [
+            'format' => Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
+            'formatters' => [
+                Response::FORMAT_JSON => [
+                    'class' => JsonResponseFormatter::class,
+                    'prettyPrint' => YII_DEBUG,
+                    'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                ],
+            ],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'class' => ErrorHandler::class,
         ],
-        'mailer' => [
-            'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+        'user' => [
+            'identityClass' => User::class,
+            'enableSession' => false,
+        ],
+        'cache' => [
+            'class' => MemCache::class,
+            'useMemcached' => true,
+            'servers' => [
+                [
+                    'host' => 'memcached',
+                    'port' => getenv('MEMCACHED_PORT'),
+                ],
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => FileTarget::class,
                     'levels' => ['error', 'warning'],
+                    'logVars' => ['_GET', '_POST'],
                 ],
             ],
         ],
-        'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
         ],
-        */
     ],
-    'params' => $params,
+    'modules' => [
+        'v1' => [
+            'class' => ModuleApiV1::class,
+        ],
+    ]
 ];
-
-if (YII_ENV_DEV) {
-    // configuration adjustments for 'dev' environment
-    $config['bootstrap'][] = 'debug';
-    $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
-    ];
-
-    $config['bootstrap'][] = 'gii';
-    $config['modules']['gii'] = [
-        'class' => 'yii\gii\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
-    ];
-}
-
-return $config;

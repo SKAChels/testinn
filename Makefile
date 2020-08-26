@@ -4,7 +4,7 @@ stop: docker-stop
 start: docker-start
 restart: docker-restart
 build: docker-build
-init: docker-down-clear docker-build docker-up
+init: docker-down-clear docker-build docker-up app-init
 
 build-nginx:
 	docker-compose build nginx
@@ -36,20 +36,28 @@ docker-restart:
 docker-build:
 	docker-compose build
 
-composer:
-	docker-compose up --detach composer
-
 up-php:
 	docker-compose up --detach php
 
 up-nginx:
 	docker-compose up --detach nginx
 
+app-init: composer-install
+
+composer-install:
+	docker-compose run --rm composer install
+
+composer-install-no-dev:
+	docker-compose run --rm composer install --no-dev
+
 shell-php:
 	docker-compose exec php bash
 
 shell-nginx:
 	docker-compose exec nginx bash
+
+shell-composer:
+	docker-compose run --rm composer bash
 
 log-nginx:
 	docker-compose logs --follow nginx
