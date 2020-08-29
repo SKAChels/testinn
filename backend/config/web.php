@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use app\components\ErrorHandler;
 use app\models\User;
-use yii\web\ErrorHandler;
 use yii\web\JsonResponseFormatter;
 use yii\caching\MemCache;
 use yii\log\FileTarget;
@@ -14,6 +14,7 @@ use yii\web\Response;
 return [
     'id' => 'testinn-api',
     'name' => 'Test INN API',
+    'language' => 'ru-RU',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log', 'v1'],
     'components' => [

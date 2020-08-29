@@ -9,5 +9,8 @@ return [
         'class' => UrlRule::class,
         'controller' => ['v1/inn'],
         'pluralize' => false,
+        'patterns' => [
+            'POST check' => 'check'
+        ]
     ],
 ];

@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 namespace app\modules\v1\controllers;
 
+use app\modules\v1\services\InnService;
 use yii\rest\Controller;
+use Yii;
 
 class InnController extends Controller
 {
-    public function actionIndex()
+    public InnService $innService;
+
+    public function __construct($id, $module, InnService $innService, $config = [])
     {
-        return null;
+        $this->innService = $innService;
+        parent::__construct($id, $module, $config);
+    }
+
+    public function actionCheck(): bool
+    {
+        $data = Yii::$app->getRequest()->post();
+        return $this->innService->isPersonalInn($data);
     }
 }
