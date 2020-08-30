@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\modules\v1\services;
 
 use app\components\ExceptionFactory;
+use app\lib\web\HttpException;
 use app\modules\v1\models\Inn;
 use app\modules\v1\repository\InnRepository;
 
@@ -20,16 +21,15 @@ class InnService
     /**
      * @param array $data
      * @return bool
-     * @throws \app\lib\web\HttpException
+     * @throws HttpException
      */
     public function isPersonalInn(array $data): bool
     {
-        $model = new Inn();
-        $model->load($data);
-        if(!$model->validate()) {
-            throw ExceptionFactory::validationError($model->getErrors());
+        $inn = new Inn();
+        if(!$inn->load($data) || !$inn->validate()) {
+            throw ExceptionFactory::validationError($inn->getErrors());
         }
 
-        return true;
+        return $this->repository->isPersonalInn($inn->getInn());
     }
 }

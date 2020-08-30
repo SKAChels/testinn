@@ -16,6 +16,7 @@ class Inn extends Model
             ['inn', 'required'],
             ['inn', 'string'],
             ['inn', 'trim'],
+            ['inn', InnValidator::class],
         ];
     }
 
@@ -26,8 +27,18 @@ class Inn extends Model
         ];
     }
 
+    public function formName(): string
+    {
+        return '';
+    }
+
     public function getInn(): string
     {
         return $this->inn;
+    }
+
+    public function setInn(string $inn): void
+    {
+        $this->inn = $inn;
     }
 }

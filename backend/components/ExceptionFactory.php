@@ -8,11 +8,11 @@ use app\lib\web\HttpException;
 
 class ExceptionFactory
 {
-    public const WRONG_RESPONSE = 1;
+    public const INN_API_ERROR = 1;
     public const VALIDATION_ERROR = 2;
 
     protected static array $MESSAGES = [
-        self::WRONG_RESPONSE => 'Неверный ответ',
+        self::INN_API_ERROR => 'Не удалось проверить ИНН',
         self::VALIDATION_ERROR => 'Ошибка валидации',
     ];
 
@@ -54,13 +54,17 @@ class ExceptionFactory
         return new HttpException(400, $details, $code, $prevException);
     }
 
-    /**
-     * @param array $errors
-     * @return HttpException
-     */
     public static function validationError($errors = []): HttpException
     {
         $result = self::get(self::VALIDATION_ERROR);
+        $result->extraInfo = $errors;
+
+        return $result;
+    }
+
+    public static function innApiError($errors = []): HttpException
+    {
+        $result = self::get(self::INN_API_ERROR);
         $result->extraInfo = $errors;
 
         return $result;
