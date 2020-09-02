@@ -8,6 +8,7 @@ use app\lib\web\HttpException;
 use app\modules\v1\services\InnService;
 use yii\rest\Controller;
 use Yii;
+use yii\rest\OptionsAction;
 
 class InnController extends Controller
 {
@@ -15,8 +16,8 @@ class InnController extends Controller
 
     public function __construct($id, $module, InnService $innService, $config = [])
     {
-        $this->innService = $innService;
         parent::__construct($id, $module, $config);
+        $this->innService = $innService;
     }
 
     /**

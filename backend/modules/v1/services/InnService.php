@@ -27,7 +27,7 @@ class InnService
     {
         $inn = new Inn();
         if(!$inn->load($data) || !$inn->validate()) {
-            throw ExceptionFactory::validationError($inn->getErrors());
+            throw ExceptionFactory::validationError($inn->getErrorSummary(true));
         }
 
         return $this->repository->isPersonalInn($inn->getInn());

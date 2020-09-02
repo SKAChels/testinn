@@ -50,7 +50,7 @@ class InnValidator extends Validator
                     $this->inn[8]*8) % 11) % 10;
 
         if ($code10 !== (int) $this->inn[9]) {
-            $this->addError($this->model, $this->attribute, 'ИНН является недействительным');
+            $this->addError($this->model, $this->attribute, 'Указан некорректный ИНН');
         }
     }
 
@@ -65,7 +65,7 @@ class InnValidator extends Validator
                     $this->inn[8]*4 + $this->inn[9]*6 + $this->inn[10]*8) % 11 ) % 10;
 
         if ($code11 !== (int) $this->inn[10] || $code12 !== (int) $this->inn[11]) {
-            $this->addError($this->model, $this->attribute, 'ИНН является недействительным');
+            $this->addError($this->model, $this->attribute, 'Указан некорректный ИНН');
         }
     }
 }

@@ -10,6 +10,7 @@ use yii\log\FileTarget;
 use app\modules\v1\Module as ModuleApiV1;
 use yii\web\JsonParser;
 use yii\web\Response;
+use app\lib\web\Request;
 
 return [
     'id' => 'testinn-api',
@@ -19,6 +20,7 @@ return [
     'bootstrap' => ['log', 'v1'],
     'components' => [
         'request' => [
+            'class' => Request::class,
             'enableCsrfValidation' => false,
             'enableCookieValidation' => false,
             'parsers' => [

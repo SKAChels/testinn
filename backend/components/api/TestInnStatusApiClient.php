@@ -18,6 +18,7 @@ class TestInnStatusApiClient
     private const REQUEST_TIMEOUT = 60;
 
     private Client $client;
+    private string $inn;
 
     public function __construct()
     {
@@ -40,23 +41,51 @@ class TestInnStatusApiClient
      */
     public function isPersonalInnRequest(string $inn): bool
     {
+        $this->inn = $inn;
+        return $this->sendRequest();
+    }
+
+    /**
+     * @return bool
+     * @throws HttpException
+     */
+    private function sendRequest(): bool
+    {
         try {
             /** @var Response $response */
             $response = $this->client->createRequest()
                 ->setMethod('POST')
-                ->setData(['inn' => $inn, 'requestDate' => date('Y-m-d')])
+                ->setData(['inn' => $this->inn, 'requestDate' => date('Y-m-d')])
                 ->setOptions(['timeout' => self::REQUEST_TIMEOUT])
                 ->send();
 
-            $http_status = $response->getIsOk();
-            $data = $response->getData();
+            $isPersonalInn = $this->handleResponse($response);
 
         } catch (Exception | InvalidConfigException $e) {
             throw ExceptionFactory::innApiError();
         }
 
-        if (!$http_status) {
+        return $isPersonalInn;
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     * @throws Exception
+     * @throws HttpException
+     */
+    private function handleResponse(Response $response): bool
+    {
+        $isOk = $response->getIsOk();
+        $httpCode = (int) $response->getStatusCode();
+        $data = $response->getData();
+
+        if ($httpCode === 422) {
             throw ExceptionFactory::innApiError($data);
+        }
+
+        if (!$isOk) {
+            throw ExceptionFactory::innApiError();
         }
 
         return $data['status'];

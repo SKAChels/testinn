@@ -6,11 +6,11 @@ restart: docker-restart
 build: docker-build
 init: docker-down-clear docker-build docker-up app-init
 
-build-nginx:
-	docker-compose build nginx
-
 build-php:
 	docker-compose build php
+
+build-node:
+	docker-compose build node
 
 build-php-with-xdebug:
 	docker-compose build --build-arg ENV=DEV php
@@ -42,13 +42,25 @@ up-php:
 up-nginx:
 	docker-compose up --detach nginx
 
-app-init: composer-install
+up-node:
+	docker-compose up --detach node
+
+app-init: composer-install npm-install npm-build
 
 composer-install:
-	docker-compose run --rm composer install
+	docker-compose exec composer install
 
 composer-install-no-dev:
-	docker-compose run --rm composer install --no-dev
+	docker-compose exec composer install --no-dev
+
+npm-install:
+	docker-compose exec node npm install
+
+npm-build:
+	docker-compose exec node npm run build
+
+npm-build-dev:
+	docker-compose exec node npm run serve
 
 shell-php:
 	docker-compose exec php bash
@@ -57,7 +69,10 @@ shell-nginx:
 	docker-compose exec nginx bash
 
 shell-composer:
-	docker-compose run --rm composer bash
+	docker-compose exec composer bash
+
+shell-node:
+	docker-compose exec node sh
 
 log-nginx:
 	docker-compose logs --follow nginx
