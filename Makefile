@@ -48,10 +48,10 @@ up-node:
 app-init: composer-install npm-install npm-build
 
 composer-install:
-	docker-compose exec composer install
+	docker-compose run --rm composer install
 
 composer-install-no-dev:
-	docker-compose exec composer install --no-dev
+	docker-compose run --rm composer install --no-dev
 
 npm-install:
 	docker-compose exec node npm install
@@ -69,7 +69,7 @@ shell-nginx:
 	docker-compose exec nginx bash
 
 shell-composer:
-	docker-compose exec composer bash
+	docker-compose run --rm composer bash
 
 shell-node:
 	docker-compose exec node sh
