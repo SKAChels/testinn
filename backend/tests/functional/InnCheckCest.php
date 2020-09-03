@@ -16,6 +16,6 @@ class InnCheckCest
         $I->sendPOST($this->url, ['inn' => '222490425273']);
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
-        $I->seeResponseEquals('true');
+        $I->seeResponseEquals('false');
     }
 }
