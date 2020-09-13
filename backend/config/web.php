@@ -18,6 +18,7 @@ return [
     'language' => 'ru-RU',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log', 'v1'],
+    'container' => require __DIR__ . '/container.php',
     'components' => [
         'request' => [
             'class' => Request::class,
@@ -44,16 +45,6 @@ return [
         'user' => [
             'identityClass' => User::class,
             'enableSession' => false,
-        ],
-        'cache' => [
-            'class' => MemCache::class,
-            'useMemcached' => true,
-            'servers' => [
-                [
-                    'host' => 'memcached',
-                    'port' => getenv('MEMCACHED_PORT'),
-                ],
-            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

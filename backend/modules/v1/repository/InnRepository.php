@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace app\modules\v1\repository;
 
-use app\components\api\TestInnStatusApiClient;
+use app\components\api\InnStatusClient;
 use yii\caching\CacheInterface;
-use Yii;
 
 class InnRepository
 {
     private const CACHE_DURATION = 86400;
 
-    private TestInnStatusApiClient $client;
     private CacheInterface $cache;
+    private InnStatusClient $client;
 
-    public function __construct(TestInnStatusApiClient $client)
+    public function __construct(CacheInterface $cache, InnStatusClient $client)
     {
+        $this->cache = $cache;
         $this->client = $client;
-        $this->cache = Yii::$app->cache;
     }
 
     public function isPersonalInn(string $inn): bool

@@ -7,32 +7,15 @@ namespace app\components\api;
 use app\components\ExceptionFactory;
 use app\lib\web\HttpException;
 use yii\base\InvalidConfigException;
+use yii\httpclient\Request;
 use yii\httpclient\Response;
 use yii\httpclient\Client;
-use yii\httpclient\CurlTransport;
 use yii\httpclient\Exception;
 
-class TestInnStatusApiClient
+class InnStatusClient extends Client
 {
-    private const API_URL = 'https://statusnpd.nalog.ru/api/v1/tracker/taxpayer_status';
-    private const REQUEST_TIMEOUT = 60;
-
-    private Client $client;
-    private string $inn;
-
-    public function __construct()
-    {
-        $this->client = new Client([
-            'transport' => CurlTransport::class,
-            'baseUrl' => self::API_URL,
-            'requestConfig' => [
-                'format' => Client::FORMAT_JSON,
-            ],
-            'responseConfig' => [
-                'format' => Client::FORMAT_JSON,
-            ],
-        ]);
-    }
+    public float $requestTimeout = 60;
+    public string $inn;
 
     /**
      * @param string $inn
@@ -52,12 +35,8 @@ class TestInnStatusApiClient
     private function sendRequest(): bool
     {
         try {
-            /** @var Response $response */
-            $response = $this->client->createRequest()
-                ->setMethod('POST')
-                ->setData(['inn' => $this->inn, 'requestDate' => date('Y-m-d')])
-                ->setOptions(['timeout' => self::REQUEST_TIMEOUT])
-                ->send();
+            $request = $this->buildRequest();
+            $response = $request->send();
 
             $isPersonalInn = $this->handleResponse($response);
 
@@ -89,5 +68,17 @@ class TestInnStatusApiClient
         }
 
         return $data['status'];
+    }
+
+    /**
+     * @return mixed
+     * @throws InvalidConfigException
+     */
+    private function buildRequest(): Request
+    {
+        return $this->createRequest()
+            ->setMethod('POST')
+            ->setData(['inn' => $this->inn, 'requestDate' => date('Y-m-d')])
+            ->setOptions(['timeout' => $this->requestTimeout]);
     }
 }
